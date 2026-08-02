@@ -1,0 +1,12 @@
+{
+  "name": "agro-intel-suite",
+  "version": "1.0.0",
+  "description": "Agro-Intel Suite – AI Agriculture & Environment Intelligence Platform",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx browser-sync start --server --files \"index.html, styles.css, app.js\" --port 3000"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.2"
+  }
+}

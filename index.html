@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agro-Intel Suite – AI Agriculture & Environment Intelligence Platform</title>
+  <meta name="description" content="A next-generation AI-powered agricultural dashboard featuring weather intelligence, soil analytics, air quality monitoring, crop suggestions, plant leaf disease detection, and smart farming advisory.">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Background Decorative Blurs -->
+  <div class="bg-blur-blob blob-1"></div>
+  <div class="bg-blur-blob blob-2"></div>
+  <div class="bg-blur-blob blob-3"></div>
+
+  <!-- App Wrapper -->
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar-nav" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">
+          <i class="fa-solid fa-seedling"></i>
+        </div>
+        <div class="logo-text">
+          <h2>Agro-Intel</h2>
+          <span>SUITE</span>
+        </div>
+      </div>
+      
+      <nav class="nav-menu">
+        <a href="#overview-section" class="nav-item active" id="nav-overview">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Overview</span>
+        </a>
+        <a href="#weather-section" class="nav-item" id="nav-weather">
+          <i class="fa-solid fa-cloud-sun-rain"></i>
+          <span>Weather & AQI</span>
+        </a>
+        <a href="#crop-section" class="nav-item" id="nav-crop">
+          <i class="fa-solid fa-wheat-awn"></i>
+          <span>Crop AI Advisor</span>
+        </a>
+        <a href="#plant-doctor-section" class="nav-item" id="nav-doctor">
+          <i class="fa-solid fa-user-md"></i>
+          <span>AI Plant Doctor</span>
+        </a>
+        <a href="#map-section" class="nav-item" id="nav-map">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <span>Environment Map</span>
+        </a>
+        <a href="#analytics-section" class="nav-item" id="nav-analytics">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Analytics</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <span class="status-indicator online"></span>
+          <span class="status-text">AI Core Online</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top Header Bar -->
+      <header class="top-header">
+        <button class="mobile-toggle-btn" id="mobile-sidebar-toggle" aria-label="Toggle Navigation Menu">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <div class="header-search">
+          <span class="header-date" id="current-date-time">Loading system status...</span>
+        </div>
+
+        <div class="header-controls">
+          <!-- Regional Selector -->
+          <div class="control-group">
+            <label for="region-select" class="control-label"><i class="fa-solid fa-location-dot"></i> Region:</label>
+            <select id="region-select" class="glass-select">
+              <option value="punjab">Punjab Plains (Sub-Tropical)</option>
+              <option value="us_midwest">US Midwest (Temperate Corn Belt)</option>
+              <option value="andalusia">Andalusian Hills (Mediterranean Dry)</option>
+              <option value="nile_delta">Nile Delta (Arid River Valley)</option>
+            </select>
+          </div>
+
+          <!-- Unit Selector -->
+          <button id="unit-toggle-btn" class="glass-btn btn-icon-text" title="Toggle Units (°C / °F)">
+            <i class="fa-solid fa-temperature-half"></i>
+            <span id="unit-label">°C / Metric</span>
+          </button>
+
+          <!-- Light/Dark Mode Switcher -->
+          <button id="theme-toggle-btn" class="glass-btn btn-round" title="Toggle Light/Dark Theme">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable Dashboard Grid Container -->
+      <div class="dashboard-scroll-area">
+
+        <!-- 1. HERO SECTION -->
+        <section id="overview-section" class="dashboard-section active-view">
+          <div class="hero-card glass-panel">
+            <div class="hero-content">
+              <div class="hero-badge">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> AI Agriculture Intelligence
+              </div>
+              <h1 class="hero-title">Agro-Intel Suite</h1>
+              <p class="hero-subtitle">
+                Harnessing deep learning and environmental analytics to optimize irrigation, enhance crop yields, detect plant leaf diseases, and monitor real-time weather risks.
+              </p>
+              <div class="hero-actions">
+                <a href="#plant-doctor-section" class="action-btn btn-primary">
+                  <i class="fa-solid fa-stethoscope"></i> Scan a Leaf
+                </a>
+                <a href="#crop-section" class="action-btn btn-secondary">
+                  <i class="fa-solid fa-sliders"></i> Adjust Crop Settings
+                </a>
+              </div>
+            </div>
+            <!-- Live Ticker / Alerts Ticker -->
+            <div class="live-ticker-bar">
+              <span class="ticker-label"><i class="fa-solid fa-circle-exclamation pulse-icon"></i> System Bulletins:</span>
+              <div class="ticker-content-wrapper">
+                <div class="ticker-text" id="alert-ticker-container">
+                  Initializing live data streams... Optimizing regional satellite map models... Crop recommendation parameters calculated for current region.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Stat Cards -->
+          <div class="stats-grid">
+            <div class="stat-card glass-panel">
+              <div class="stat-icon icon-green"><i class="fa-solid fa-droplet"></i></div>
+              <div class="stat-details">
+                <span class="stat-title">Avg Soil Moisture</span>
+                <h3 class="stat-value" id="quick-stat-moisture">38.4%</h3>
+                <span class="stat-sub text-green"><i class="fa-solid fa-circle-check"></i> Optimal Level</span>
+              </div>
+            </div>
+            <div class="stat-card glass-panel">
+              <div class="stat-icon icon-blue"><i class="fa-solid fa-leaf"></i></div>
+              <div class="stat-details">
+                <span class="stat-title">Crop Canopy NDVI</span>
+                <h3 class="stat-value" id="quick-stat-ndvi">0.76</h3>
+                <span class="stat-sub text-blue"><i class="fa-solid fa-arrow-up-right-dots"></i> Steady Growth</span>
+              </div>
+            </div>
+            <div class="stat-card glass-panel">
+              <div class="stat-icon icon-yellow"><i class="fa-solid fa-radiation"></i></div>
+              <div class="stat-details">
+                <span class="stat-title">Active Pest Risk</span>
+                <h3 class="stat-value" id="quick-stat-pest">Low</h3>
+                <span class="stat-sub text-yellow" id="quick-stat-pest-desc">No active outbreak alerts</span>
+              </div>
+            </div>
+            <div class="stat-card glass-panel">
+              <div class="stat-icon icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <div class="stat-details">
+                <span class="stat-title">Environmental Alerts</span>
+                <h3 class="stat-value text-red" id="quick-stat-alerts">1 Alert</h3>
+                <span class="stat-sub text-red" id="quick-stat-alerts-desc">High Wind Forecast</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2 & 3. WEATHER INTELLIGENCE & AIR QUALITY DASHBOARD -->
+        <section id="weather-section" class="dashboard-section grid-2-col">
+          
+          <!-- Weather Card -->
+          <div class="weather-panel glass-panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <i class="fa-solid fa-cloud-sun"></i>
+                <h3>Weather Intelligence Dashboard</h3>
+              </div>
+              <span class="badge badge-live">Live</span>
+            </div>
+            
+            <div class="weather-main">
+              <div class="weather-temp-block">
+                <div class="weather-large-icon" id="weather-main-icon">
+                  <i class="fa-solid fa-cloud-sun-rain"></i>
+                </div>
+                <div class="weather-temp-value">
+                  <span id="weather-temp">28</span><span class="temp-unit">°C</span>
+                </div>
+                <div class="weather-desc" id="weather-condition">Scattered Showers</div>
+              </div>
+              
+              <div class="weather-details-grid">
+                <div class="weather-detail-item">
+                  <i class="fa-solid fa-droplet"></i>
+                  <div>
+                    <span class="detail-label">Humidity</span>
+                    <span class="detail-val" id="weather-humidity">64%</span>
+                  </div>
+                </div>
+                <div class="weather-detail-item">
+                  <i class="fa-solid fa-wind"></i>
+                  <div>
+                    <span class="detail-label">Wind Speed</span>
+                    <span class="detail-val" id="weather-wind">14 km/h</span>
+                  </div>
+                </div>
+                <div class="weather-detail-item">
+                  <i class="fa-solid fa-cloud-showers-water"></i>
+                  <div>
+                    <span class="detail-label">Rain Probability</span>
+                    <span class="detail-val" id="weather-rain-prob">45%</span>
+                  </div>
+                </div>
+                <div class="weather-detail-item">
+                  <i class="fa-solid fa-gauge-high"></i>
+                  <div>
+                    <span class="detail-label">Pressure</span>
+                    <span class="detail-val" id="weather-pressure">1012 hPa</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Weather Alert Warning Drawer -->
+            <div class="weather-alert-card warning" id="weather-alerts-box">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <div>
+                <strong id="weather-alert-title">High Wind Advisory</strong>
+                <p id="weather-alert-desc">Gusts up to 45 km/h expected this evening. Secure young crop support stakes and delay high-altitude canopy spraying operations.</p>
+              </div>
+            </div>
+
+            <!-- 5-Day Forecast -->
+            <div class="forecast-section">
+              <h4>5-Day Environmental Outlook</h4>
+              <div class="forecast-grid" id="weather-forecast-list">
+                <!-- Forecast items dynamically filled by app.js -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Air Quality Dashboard -->
+          <div class="aqi-panel glass-panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <i class="fa-solid fa-wind"></i>
+                <h3>Air Quality Monitoring</h3>
+              </div>
+              <span class="badge badge-info">Sensors Active</span>
+            </div>
+
+            <div class="aqi-gauge-block">
+              <!-- Animated Circular AQI Progress SVG -->
+              <div class="aqi-circle-container">
+                <svg class="aqi-circle-svg" viewBox="0 0 120 120">
+                  <circle class="circle-bg" cx="60" cy="60" r="50"></circle>
+                  <circle class="circle-progress" id="aqi-progress-bar" cx="60" cy="60" r="50" style="stroke-dasharray: 314; stroke-dashoffset: 200;"></circle>
+                </svg>
+                <div class="aqi-circle-content">
+                  <span class="aqi-score" id="aqi-value">48</span>
+                  <span class="aqi-label">AQI</span>
+                </div>
+              </div>
+
+              <div class="aqi-status-info">
+                <div class="aqi-status-badge badge-good" id="aqi-status">Good</div>
+                <p class="aqi-health-recommendation" id="aqi-health-tips">
+                  Air quality is satisfactory. Highly favorable for all open-air agricultural operations, sowing, and harvesting.
+                </p>
+              </div>
+            </div>
+
+            <!-- Detailed Pollutant Breakdown -->
+            <div class="pollutants-list">
+              <h4>Pollutant Concentration Parameters</h4>
+              <div class="pollutant-row">
+                <span>Particulate Matter (PM2.5)</span>
+                <span class="pollutant-bar-wrapper">
+                  <span class="pollutant-bar" id="pollutant-pm25-bar" style="width: 24%;"></span>
+                </span>
+                <span class="pollutant-value" id="pollutant-pm25-val">12 µg/m³</span>
+              </div>
+              <div class="pollutant-row">
+                <span>Particulate Matter (PM10)</span>
+                <span class="pollutant-bar-wrapper">
+                  <span class="pollutant-bar" id="pollutant-pm10-bar" style="width: 35%;"></span>
+                </span>
+                <span class="pollutant-value" id="pollutant-pm10-val">35 µg/m³</span>
+              </div>
+              <div class="pollutant-row">
+                <span>Nitrogen Dioxide (NO₂)</span>
+                <span class="pollutant-bar-wrapper">
+                  <span class="pollutant-bar" id="pollutant-no2-bar" style="width: 15%;"></span>
+                </span>
+                <span class="pollutant-value" id="pollutant-no2-val">8 ppb</span>
+              </div>
+              <div class="pollutant-row">
+                <span>Ozone (O₃)</span>
+                <span class="pollutant-bar-wrapper">
+                  <span class="pollutant-bar" id="pollutant-o3-bar" style="width: 48%;"></span>
+                </span>
+                <span class="pollutant-value" id="pollutant-o3-val">42 ppb</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4 & 5. CROP RECOMMENDATION SYSTEM & AI FARMING ADVISORY -->
+        <section id="crop-section" class="dashboard-section grid-2-col">
+          
+          <!-- Crop Recommendations Form -->
+          <div class="crop-panel glass-panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <i class="fa-solid fa-wheat-awn"></i>
+                <h3>Crop Matchmaker AI</h3>
+              </div>
+              <span class="badge badge-ai"><i class="fa-solid fa-microchip"></i> Prediction</span>
+            </div>
+
+            <form id="crop-recommendation-form" class="dashboard-form" onsubmit="return false;">
+              <div class="form-group">
+                <label for="soil-type-select"><i class="fa-solid fa-mountain"></i> Soil Type Profile</label>
+                <select id="soil-type-select" class="glass-input">
+                  <option value="loamy">Loamy Soil (Fertile & Well-Drained)</option>
+                  <option value="clayey">Clayey Soil (High Moisture Retention)</option>
+                  <option value="sandy">Sandy Soil (High Drainage, Low Nutrients)</option>
+                  <option value="alluvial">Alluvial Soil (Rich Silt Deposit)</option>
+                  <option value="black">Black Soil (High Organic Content, Clay)</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="temp-input"><i class="fa-solid fa-temperature-high"></i> Temperature (°C)</label>
+                  <div class="input-range-container">
+                    <input type="number" id="temp-input" min="0" max="50" value="28" class="glass-input">
+                    <input type="range" id="temp-slider" min="0" max="50" value="28" class="glass-range-slider">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="rainfall-input"><i class="fa-solid fa-cloud-rain"></i> Annual Rainfall (mm)</label>
+                  <div class="input-range-container">
+                    <input type="number" id="rainfall-input" min="100" max="3000" value="1200" class="glass-input">
+                    <input type="range" id="rainfall-slider" min="100" max="3000" value="1200" class="glass-range-slider">
+                  </div>
+                </div>
+              </div>
+
+              <button type="button" id="btn-recommend-crop" class="btn-primary form-submit-btn">
+                <i class="fa-solid fa-wand-magic-sparkles animate-spin-hover"></i> Run AI Recommendation Engine
+              </button>
+            </form>
+
+            <div class="crop-results-container">
+              <h4>Recommended Crops for Cultivation</h4>
+              <div class="crop-results-list" id="crop-recommendations-list">
+                <!-- Recommendations filled by app.js -->
+                <div class="results-placeholder">
+                  <i class="fa-solid fa-arrow-pointer"></i>
+                  <p>Click "Run AI Recommendation Engine" to see optimal crops for your configuration.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Farming Advisory -->
+          <div class="advisory-panel glass-panel">
+            <div class="panel-header">
+              <div class="panel-title">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <h3>AI Farming Advisory Center</h3>
+              </div>
+              <span class="badge badge-tips">Advisory Active</span>
+            </div>
+
+            <div class="advisory-items">
+              <!-- Irrigation Indicator -->
+              <div class="advisory-card">
+                <div class="advisory-card-header">
+                  <div class="advisory-card-icon icon-blue"><i class="fa-solid fa-square-poll-vertical"></i></div>
+                  <div class="advisory-card-title">
+                    <h5>Smart Irrigation Status</h5>
+                    <span class="badge badge-normal" id="irrigation-status-badge">Moderate Water Need</span>
+                  </div>
+                </div>
+                <p id="irrigation-status">
+                  Irrigate fields lightly tomorrow. Soil moisture levels are hovering around 38%. Rainfall probability is moderate, so do not over-water to avoid puddling.
+                </p>
+              </div>
+
+              <!-- Fertilizer Recommendation -->
+              <div class="advisory-card">
+                <div class="advisory-card-header">
+                  <div class="advisory-card-icon icon-green"><i class="fa-solid fa-bottle-droplet"></i></div>
+                  <div class="advisory-card-title">
+                    <h5>Fertilizer Formulation Advisor</h5>
+                    <span class="badge badge-info" id="fertilizer-status-badge">NPK Balance</span>
+                  </div>
+                </div>
+                <p id="fertilizer-suggestions">
+                  Apply Nitrogen-rich compost/fertilizer (Urea) in early morning hours. Current soil analysis indicates nitrogen depletion. Avoid fertilizer spreading if winds exceed 15 km/h.
+                </p>
+              </div>
+
+              <!-- Sowing/Harvesting Timetable -->
+              <div class="advisory-card">
+                <div class="advisory-card-header">
+                  <div class="advisory-card-icon icon-yellow"><i class="fa-solid fa-calendar-days"></i></div>
+                  <div class="advisory-card-title">
+                    <h5>Sowing & Harvesting Timetable</h5>
+                    <span class="badge badge-normal" id="calendar-status-badge">Optimum Window</span>
+                  </div>
+                </div>
+                <p id="harvesting-timeline">
+                  High suitability for sowing of cereal grains. Maintain depth of 3.5cm to maximize soil contact. Crop development is at 82% maturity; expect harvest trigger in approximately 12 days.
+                </p>
+              </div>
+
+              <!-- Pest Risk Gauge -->
+              <div class="advisory-card">
+                <div class="advisory-card-header">
+                  <div class="advisory-card-icon icon-red"><i class="fa-solid fa-bug"></i></div>
+                  <div class="advisory-card-title">
+                    <h5>Pest & Disease Risk Advisory</h5>
+                    <span class="badge badge-danger" id="pest-risk-badge">Mild Threat</span>
+                  </div>
+                </div>
+                <p id="pest-risk-advisory">
+                  Humid conditions can trigger Leaf Spot development. Maintain spacing between plant rows to improve ventilation. Keep an eye on lower leaves for white spots (Powdery Mildew indicators).
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 8. PLANT DISEASE DETECTION MODULE (AI PLANT DOCTOR) -->
+        <section id="plant-doctor-section" class="dashboard-section glass-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fa-solid fa-stethoscope"></i>
+              <h3>AI Plant Doctor – Leaf Disease Scanner</h3>
+            </div>
+            <span class="badge badge-new">New Module</span>
+          </div>
+
+          <p class="section-intro">
+            Upload an image of a plant leaf from your phone or PC, or take a live photo using your camera. Our AI model will scan the leaf for visual symptoms to diagnose diseases, analyze severity, and deliver instant organic & chemical treatment plans.
+          </p>
+
+          <div class="plant-doctor-grid">
+            
+            <!-- Upload Panel -->
+            <div class="doctor-upload-zone">
+              <div class="upload-drag-area" id="drag-drop-zone">
+                <input type="file" id="leaf-image-upload" accept="image/*" class="file-hidden-input">
+                
+                <div class="upload-state-default" id="upload-state-default">
+                  <i class="fa-solid fa-cloud-arrow-up upload-cloud-icon"></i>
+                  <h4>Drag & Drop Leaf Photo Here</h4>
+                  <p>or click to browse from device folder</p>
+                  <span class="supported-formats">Supports JPG, PNG, WEBP files up to 5MB</span>
+                </div>
+
+                <!-- Video Element for Camera Feed -->
+                <div class="camera-stream-container hidden" id="camera-stream-container">
+                  <video id="camera-stream" autoplay playsinline></video>
+                  <button type="button" class="btn-primary camera-shutter-btn" id="camera-capture-shutter-btn">
+                    <i class="fa-solid fa-camera"></i> Take Photo
+                  </button>
+                </div>
+
+                <div class="upload-state-preview hidden" id="upload-state-preview">
+                  <img id="leaf-preview-img" src="" alt="Leaf upload preview">
+                  
+                  <!-- CSS Laser Scanner Animation Layer -->
+                  <div class="leaf-scan-overlay hidden" id="leaf-scan-overlay">
+                    <div class="laser-beam"></div>
+                  </div>
+
+                  <button type="button" class="btn-danger btn-sm preview-remove-btn" id="btn-remove-preview">
+                    <i class="fa-solid fa-trash"></i> Remove Image
+                  </button>
+                </div>
+              </div>
+
+              <!-- Controls and Capture Button -->
+              <div class="upload-action-row">
+                <button type="button" class="glass-btn btn-icon-text" id="camera-capture-btn">
+                  <i class="fa-solid fa-camera"></i>
+                  <span id="camera-btn-text">Open Camera</span>
+                </button>
+                <button type="button" class="btn-primary btn-icon-text hidden" id="btn-analyze-leaf">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  <span>Analyze Leaf Health</span>
+                </button>
+              </div>
+
+              <!-- Interactive Preloaded Sample Leaves for Instantly testing the App -->
+              <div class="sample-leaves-block">
+                <h5>No Leaf Handy? Try Preloaded Sample Leaves:</h5>
+                <div class="sample-btn-group">
+                  <button class="sample-leaf-btn" id="sample-leaf-healthy" data-img="healthy">
+                    <i class="fa-solid fa-circle text-green"></i> Healthy Tomato Leaf
+                  </button>
+                  <button class="sample-leaf-btn" id="sample-leaf-blight" data-img="blight">
+                    <i class="fa-solid fa-circle text-red"></i> Early Blight (Potato)
+                  </button>
+                  <button class="sample-leaf-btn" id="sample-leaf-rust" data-img="rust">
+                    <i class="fa-solid fa-circle text-orange"></i> Rust Disease (Wheat)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Diagnostics Results Dashboard (Initially Hidden Placeholder) -->
+            <div class="doctor-results-zone" id="doctor-results-zone">
+              
+              <!-- Placeholder -->
+              <div class="results-placeholder" id="doctor-results-placeholder">
+                <i class="fa-solid fa-robot"></i>
+                <h4>Diagnostic Standby</h4>
+                <p>Upload a leaf image or choose a sample leaf above to begin AI vision analysis.</p>
+              </div>
+
+              <!-- Results Display Card (populated dynamically) -->
+              <div class="results-card hidden" id="doctor-results-card">
+                <div class="results-card-header">
+                  <div>
+                    <h4 id="disease-name">Bacterial Wilt</h4>
+                    <span class="diagnostic-confidence">Confidence: <strong id="disease-confidence">94%</strong></span>
+                  </div>
+                  <span class="severity-badge badge-high-risk" id="disease-severity">High Risk</span>
+                </div>
+
+                <div class="results-desc-section">
+                  <h5>Description</h5>
+                  <p id="disease-description">
+                    A destructive bacterial disease caused by Ralstonia solanacearum. It clogs the vascular system of the crop, blocking water and nutrient transport, leading to sudden leaf collapse.
+                  </p>
+                </div>
+
+                <div class="results-desc-section">
+                  <h5>Primary Causes</h5>
+                  <p id="disease-causes">
+                    Soil-borne bacterial transmission, poor field drainage, infected agricultural tools, and root damage from nematode feeding.
+                  </p>
+                </div>
+
+                <hr class="results-divider">
+
+                <div class="treatment-section">
+                  <h4 class="treatment-heading"><i class="fa-solid fa-hand-holding-hand"></i> Precaution & Treatment Solutions</h4>
+                  
+                  <div class="treatment-tabs">
+                    <button class="treatment-tab-btn active" id="tab-organic">Organic</button>
+                    <button class="treatment-tab-btn" id="tab-chemical">Chemical</button>
+                    <button class="treatment-tab-btn" id="tab-irrigation">Irrigation/Soil</button>
+                    <button class="treatment-tab-btn" id="tab-prevention">Prevention</button>
+                  </div>
+
+                  <div class="treatment-tab-content" id="treatment-content-box">
+                    <!-- Dynamic treatments here -->
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. INTERACTIVE ENVIRONMENT MAP -->
+        <section id="map-section" class="dashboard-section glass-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fa-solid fa-map-location-dot"></i>
+              <h3>Interactive Environment & Soil Moisture Map</h3>
+            </div>
+            <div class="map-controls">
+              <!-- Overlay Selector Buttons -->
+              <button class="map-layer-btn active" id="map-layer-default"><i class="fa-solid fa-map"></i> Standard Map</button>
+              <button class="map-layer-btn" id="map-layer-ndvi"><i class="fa-solid fa-leaf"></i> Crop NDVI Index</button>
+              <button class="map-layer-btn" id="map-layer-moisture"><i class="fa-solid fa-droplet"></i> Soil Moisture Overlay</button>
+              <button class="map-layer-btn" id="map-layer-temp"><i class="fa-solid fa-fire-flame-curved"></i> Canopy Temp Overlay</button>
+            </div>
+          </div>
+
+          <p class="section-intro">
+            A comprehensive mapping application displaying regional crop health indexes, soil moisture grids, and surface temperatures. Select options above to visualize remote sensing layers.
+          </p>
+
+          <div class="map-wrapper">
+            <!-- Map Element -->
+            <div id="env-map" class="map-container"></div>
+            
+            <!-- Map Legend (Floating card) -->
+            <div class="map-legend glass-panel" id="map-legend-card">
+              <h5 id="legend-title">Standard Map</h5>
+              <div class="legend-scale" id="legend-scale-container">
+                <span class="legend-scale-text">Regional farm units and sensor hubs are indicated as icons. Click icons to read current sensor telemetry.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. ENVIRONMENTAL ANALYTICS DASHBOARD -->
+        <section id="analytics-section" class="dashboard-section glass-panel">
+          <div class="panel-header">
+            <div class="panel-title">
+              <i class="fa-solid fa-chart-line"></i>
+              <h3>Environmental Analytics Dashboard</h3>
+            </div>
+            <div class="analytics-tabs">
+              <button class="analytics-tab-btn active" id="btn-chart-rain"><i class="fa-solid fa-cloud-showers-heavy"></i> Rainfall Trends</button>
+              <button class="analytics-tab-btn" id="btn-chart-temp"><i class="fa-solid fa-temperature-three-quarters"></i> Temp Trends</button>
+              <button class="analytics-tab-btn" id="btn-chart-humid"><i class="fa-solid fa-droplet-slash"></i> Humidity Trends</button>
+            </div>
+          </div>
+
+          <p class="section-intro">
+            Interactive analytical charts displaying 6-month historical agricultural datasets, comparing historical means with forecasting projections.
+          </p>
+
+          <div class="charts-container">
+            <canvas id="analytics-chart-canvas"></canvas>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- 9. AI ASSISTANT CHATBOT -->
+  <div class="chatbot-container" id="chatbot-widget">
+    <!-- Chat Toggle Button -->
+    <button class="chatbot-toggle-btn" id="chatbot-toggle" aria-label="Open Agriculture AI Assistant">
+      <i class="fa-solid fa-comments"></i>
+      <span class="chatbot-pulse-dot"></span>
+    </button>
+
+    <!-- Chat Dialog Box -->
+    <div class="chatbot-box glass-panel hidden" id="chatbot-box">
+      <div class="chatbot-header">
+        <div class="chatbot-header-logo">
+          <i class="fa-solid fa-robot"></i>
+          <div>
+            <h4>Agro-Intel Chatbot</h4>
+            <span>Agricultural AI Advisor</span>
+          </div>
+        </div>
+        <button class="chat-close-btn" id="chatbot-close-btn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Messages Stream -->
+      <div class="chatbot-messages" id="chatbot-messages">
+        <div class="chat-msg msg-ai">
+          <div class="chat-msg-avatar"><i class="fa-solid fa-robot"></i></div>
+          <div class="chat-msg-bubble">
+            Hello! I am your Agro-Intel Assistant. I can recommend crop options, advise on pest control, outline irrigation guidelines, or discuss plant diseases. How can I assist you today?
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggestion chips -->
+      <div class="chat-suggestions">
+        <button class="chat-chip" id="chip-pest">How to prevent Rust disease?</button>
+        <button class="chat-chip" id="chip-irrigate">When should I irrigate cotton?</button>
+        <button class="chat-chip" id="chip-soil">Which crops match Sandy soil?</button>
+      </div>
+
+      <!-- Chat Input Area -->
+      <form class="chatbot-input-area" id="chatbot-form" onsubmit="return false;">
+        <input type="text" id="chatbot-input" placeholder="Ask about crops, pests, soil, weather..." class="glass-input" autocomplete="off">
+        <button type="submit" id="chatbot-send-btn" class="chat-send-btn"><i class="fa-solid fa-paper-plane"></i></button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Leaflet Javascript library -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Main application script -->
+  <script src="app.js"></script>
+</body>
+</html>
